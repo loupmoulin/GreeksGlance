@@ -6,4 +6,5 @@ Two display modes: single chart or dual comparison.
 To launch the project, you must first have Streamlit installed. If that is not the case, open your terminal and type these two commands:
 
 pip install streamlit numpy scipy plotly
-streamlit run app.py
+
+streamlit run GG.py
