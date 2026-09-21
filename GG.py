@@ -17,11 +17,11 @@ with col1:
 with col2:
     K = st.number_input("Strike Price (K)", value=100.0, step=5.0)
 with col3:
-    T = st.number_input("Maturity (Years)", value=0.5, step=0.1, min_value=0.01)
+    T = st.number_input("Maturity (Years)", value=1.0, step=0.1, min_value=0.01)
 with col4:
-    sigma = st.number_input("Implied Volatility (%)", value=20.0, step=1.0, min_value=1.0)/100.0
+    sigma = st.number_input("Implied Volatility (%)", value=10.0, step=1.0, min_value=1.0)/100.0
 with col5:
-    r = st.number_input("Risk Free Rate (%)", value=2.0, step=0.5)/100.0
+    r = st.number_input("Risk Free Rate (%)", value=1.0, step=0.5)/100.0
 
 # Mathematical calculations
 S = np.linspace(max(10.0, K*0.5), K*1.5, 300)
@@ -29,8 +29,8 @@ S = np.linspace(max(10.0, K*0.5), K*1.5, 300)
 d1 = (np.log(S/K)+(r+0.5*sigma**2)*T)/(sigma*np.sqrt(T))
 d2 = d1-sigma*np.sqrt(T)
 
-pdf_d1 = norm.pdf(d1)
-cdf_d1 = norm.cdf(d1)
+pdf_d1 = norm.pdf(d1) # N'(d1)
+cdf_d1 = norm.cdf(d1) #N(d1)
 cdf_d2 = norm.cdf(d2)
 
 if option_type=="Call":
@@ -41,7 +41,7 @@ else:
     theta = (-(S*pdf_d1*sigma)/(2*np.sqrt(T))+r*K*np.exp(-r*T)*norm.cdf(-d2))/365.0
 
 gamma = pdf_d1/(S*sigma*np.sqrt(T))
-vega = (S*np.sqrt(T)*pdf_d1)/100.0
+vega = (S*np.sqrt(T)*pdf_d1)/100.0 #en pourcentage
 
 greeks_data = {
     "Delta": {"values": delta, "color": "#0055FF", "secondary": False},
@@ -56,17 +56,7 @@ def build_chart(selected_greeks, title_text):
 
     for greek in selected_greeks:
         data = greeks_data[greek]
-        fig.add_trace(
-            go.Scatter(
-                x=S,
-                y=data["values"],
-                mode="lines",
-                name=greek,
-                line=dict(color=data["color"], width=3)
-            ),
-            secondary_y=data["secondary"]
-        )
-
+        fig.add_trace(go.Scatter(x=S,y=data["values"],mode="lines",name=greek,line=dict(color=data["color"], width=3)),secondary_y=data["secondary"])
     fig.add_vline(x=K, line_dash="dash", line_color="#444444", line_width=1.5, annotation_text=f" Strike K={int(K)}", annotation_position="top left")
 
     fig.update_layout(
